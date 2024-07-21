@@ -9,9 +9,11 @@ use std::hash::Hash;
 
 
 fn check_build(){
-    let elms = vec![1, 2];
+    let elms = vec![1, 2, 3, 4];
     let tree = MerkleTree::build(elms);
     println!("{:?}", tree.root());
+    println!("{:?}", tree.nodes);
+    println!("branching factor {:?}", tree.branching_factor);
 }
 
 fn main() {

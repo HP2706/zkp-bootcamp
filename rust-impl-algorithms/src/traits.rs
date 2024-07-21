@@ -11,7 +11,7 @@ pub trait TreeElement: Clone + Hash + Debug + Send + Sync {}
 
 impl<T: Clone + Hash + Debug + Send + Sync> TreeElement for T {}
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Copy)]
 pub struct HashValue {
     value : [u8; 8],
     
@@ -47,25 +47,28 @@ pub struct TreeNode<T: TreeElement> {
     pub value: Option<T>,
     pub hash_value: HashValue,
     pub children: Vec<usize>, 
+    pub idx: usize,
 }
 
 impl<T: TreeElement> TreeNode<T> {
-    pub fn new(value: T) -> Self {
+    pub fn new(value: T, idx: usize) -> Self {
         let mut hasher = DefaultHasher::new();
         value.hash(&mut hasher);
         let hash = hasher.finish();
         TreeNode { 
             value: Some(value), 
             hash_value: HashValue::from(hash as usize), 
-            children: Vec::new() 
+            children: Vec::new(),
+            idx: idx
         }
     }
 
-    pub fn internal_add(hash : HashValue, child_idxs : Vec<usize>) -> Self {
+    pub fn internal_add(hash : HashValue, child_idxs : Vec<usize>, idx: usize) -> Self {
         TreeNode { 
             value: None, 
             hash_value: hash,
-            children: child_idxs
+            children: child_idxs,
+            idx: idx
         }
     }
 }

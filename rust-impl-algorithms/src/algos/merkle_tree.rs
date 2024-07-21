@@ -32,57 +32,62 @@ impl<T: TreeElement> TreeBuilder<T> for MerkleTreeBuilder<T> {
 }
 
 pub struct MerkleTree<T: TreeElement> {
-    nodes: Vec<Option<TreeNode<T>>>,
-    root_idx: Option<usize>,
-    size: usize,
-    branching_factor: usize,
+    pub nodes: Vec<Option<TreeNode<T>>>,
+    pub size: usize,
+    pub branching_factor: usize,
 }
 
 impl<T: TreeElement> MerkleTree<T> {
     fn build_internal(elements: Vec<T>, branching_factor: usize) -> Self {
         let size = elements.len();
         
-        // Calculate depth and allocate space for all nodes
-        let depth = (size as f64).log(branching_factor as f64).ceil() as u32;
-        let total_nodes = (branching_factor.pow(depth + 1) - 1) / (branching_factor - 1);
-        let mut nodes = vec![None; total_nodes];
+        // Calculate the total number of nodes needed
+        let total_nodes = Self::calculate_total_nodes(size as i32, branching_factor as i32);
+        let mut nodes = vec![None; total_nodes as usize];
 
-        // Build leaf nodes
-        let leaf_start = (total_nodes - size) / branching_factor * branching_factor;
-        nodes[leaf_start..].par_iter_mut()
-            .zip(elements.par_iter())
-            .for_each(|(node, element)| {
-                *node = Some(TreeNode::new(element.clone()));
-            });
-
-        // Build internal nodes
-        for level in (0..depth).rev() {
-            let level_start = (branching_factor.pow(level) - 1) / (branching_factor - 1);
-            let level_end = (branching_factor.pow(level + 1) - 1) / (branching_factor - 1);
-            
-            nodes[level_start..level_end].par_chunks_mut(branching_factor).enumerate().for_each(|(i, nodes)| {
-                let children_start = level_end + i * branching_factor;
-                let children_end = children_start + branching_factor;
-                
-                let merged_hash = nodes
-                    .par_iter()
-                    .filter_map(|child| child.as_ref().map(|n| n.hash_value.clone()))
-                    .reduce(|| HashValue::default(), |a, b| a.add(b));
-
-                nodes[0] = Some(TreeNode::internal_add(
-                    merged_hash,
-                    (children_start..children_end).collect()
-                ));
-            });
+        // Insert leaf nodes
+        for (i, element) in elements.into_iter().enumerate() {
+            nodes[size - 1 + i] = Some(TreeNode::new(element, size - 1 + i));
         }
 
-        return MerkleTree{
-            nodes : nodes,
-            root_idx: Some(0), //TODO is thic correct??
-            size : size,
-            branching_factor : branching_factor,
-        };
+        // Build internal nodes bottom-up
+        for i in (0..size-1).rev() {
+            let children_hashes: Vec<_> = (0..branching_factor)
+                .map(|j| {
+                    let child_index = i * branching_factor + j + 1;
+                    nodes.get(child_index).and_then(|n| n.as_ref().map(|node| node.hash_value.clone()))
+                })
+                .collect();
+
+            let merged_hash = children_hashes.into_iter()
+                .filter_map(|h| h)
+                .reduce(|a, b| a.add(b))
+                .unwrap_or_default();
+
+            nodes[i] = Some(TreeNode::internal_add(
+                merged_hash,
+                (0..branching_factor).map(|j| i * branching_factor + j + 1).collect(),
+                i
+            ));
+        }
+
+        MerkleTree {
+            nodes,
+            size,
+            branching_factor,
+        }
     }
+
+    fn calculate_total_nodes(size: i32, branching_factor: i32) -> i32 {
+        let depth = (size as f64).log(branching_factor as f64).ceil() as u32;
+        println!("depth {:?}", depth);
+        let count = (
+            (branching_factor.pow(depth) - 1) / (branching_factor - 1)
+        ) + size;
+        println!("count {:?}", count);
+        count
+    }
+
 }
 
 impl<T> Tree<T> for MerkleTree<T> 
@@ -102,18 +107,14 @@ where
         MerkleTree::build_internal(elements, 2)
     }
 
+    fn root(&self) -> &TreeNode<T> {
+        self.nodes[0].as_ref().expect("Tree is empty")
+    }
+
     fn is_empty(&self) -> bool {
         if self.size == 0 {
             return true;
         }
         false
     }
-
-    fn root(&self) -> &TreeNode<T> {
-        match self.root_idx {
-            Some(idx) => self.nodes[idx].as_ref().unwrap(),
-            None => panic!("Tree is empty"),
-        }
-    }
-
 }
