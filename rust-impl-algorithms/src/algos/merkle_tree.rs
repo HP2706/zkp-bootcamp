@@ -80,14 +80,63 @@ impl<T: TreeElement> MerkleTree<T> {
 
     fn calculate_total_nodes(size: i32, branching_factor: i32) -> i32 {
         let depth = (size as f64).log(branching_factor as f64).ceil() as u32;
-        println!("depth {:?}", depth);
         let count = (
             (branching_factor.pow(depth) - 1) / (branching_factor - 1)
         ) + size;
-        println!("count {:?}", count);
         count
     }
 
+    // Helper method to update nodes from a given index up to the root
+    fn update_nodes(&mut self, mut index: usize) {
+        while index > 0 {
+            let parent_index = (index - 1) / self.branching_factor;
+            let start_child = parent_index * self.branching_factor + 1;
+            let end_child = (parent_index + 1) * self.branching_factor;
+
+            let children_hashes: Vec<_> = (start_child..=end_child)
+                .filter_map(|i| self.nodes.get(i))
+                .filter_map(|n| n.as_ref().map(|node| node.hash_value.clone()))
+                .collect();
+
+            let merged_hash = children_hashes.into_iter()
+                .reduce(|a, b| a.add(b))
+                .unwrap_or_default();
+
+            if let Some(node) = &mut self.nodes[parent_index] {
+                node.hash_value = merged_hash;
+            } else {
+                self.nodes[parent_index] = Some(TreeNode::internal_add(
+                    merged_hash,
+                    (start_child..=end_child).collect(),
+                    parent_index
+                ));
+            }
+
+            index = parent_index;
+        }
+    }
+
+    // Helper method to rebalance the tree if necessary
+    fn rebalance(&mut self) {
+        let new_total_nodes = Self::calculate_total_nodes(self.size as i32, self.branching_factor as i32) as usize;
+        if new_total_nodes > self.nodes.len() {
+            let additional_nodes = new_total_nodes - self.nodes.len();
+            self.nodes.extend(std::iter::repeat(None).take(additional_nodes));
+            
+            // Rebuild the entire tree
+            *self = Self::build_internal(
+                self.nodes.iter()
+                    .filter_map(
+                        |n| 
+                        n.as_ref()
+                            .map(|node| node.value.clone())
+                    )
+                    .filter_map(|f| f)
+                    .collect(),
+                self.branching_factor
+            );
+        }
+    }
 }
 
 impl<T> Tree<T> for MerkleTree<T> 
@@ -117,4 +166,21 @@ where
         }
         false
     }
+
+    /// Inserts an element into the tree and updates the affected nodes
+    fn insert(&mut self, element: T) -> bool {
+        // Add the new element as a leaf node
+        let new_index = self.size;
+        self.nodes.push(Some(TreeNode::new(element, new_index)));
+        self.size += 1;
+
+        // Update the affected nodes up to the root
+        self.update_nodes(new_index);
+
+        // Rebalance the tree if necessary
+        self.rebalance();
+
+        true
+    }
+
 }

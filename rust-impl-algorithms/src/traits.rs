@@ -83,7 +83,7 @@ where
     fn build(elements: Vec<T>) -> Self;
 
     /// Insert a new element H into the tree
-    //fn insert(&mut self, element: T) -> bool;
+    fn insert(&mut self, element: T) -> bool;
 
     /// Combine the hashes of multiple elements
 
@@ -117,7 +117,6 @@ where
     //fn verify_proof(&self, element: &T, proof: &Self::Proof) -> bool;
 
     /// Update an existing element in the tree
-    //fn update(&mut self, old_element: &T, new_element: T) -> bool;
 
     /// Delete an element from the tree
     //fn delete(&mut self, element: &T) -> bool;
