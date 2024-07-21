@@ -14,15 +14,14 @@ fn get_bottom_nodes<T: TreeElement>(nodes: Vec<Option<TreeNode<T>>>) -> Vec<Tree
     .collect()
 }
 
-fn check_build(){
-    let elms = vec![1, 2, 3, 4];
-    let mut tree = MerkleTree::build(elms);
-    let elms = get_bottom_nodes::<i32>(tree.nodes.clone());
-
-    tree.insert(5);
-    let elms = get_bottom_nodes::<i32>(tree.nodes.clone());
+fn test_delete_merkle_tree() {
+    let mut tree = MerkleTree::build(vec![1, 2, 3, 4]);
+    let initial_root_hash = tree.root().hash_value.clone();
+    tree.delete(&4);
+    assert_eq!(tree.n_leafs, 3, "Tree size should be 3 after deletion {:?}", tree.nodes);
+    assert_ne!(tree.root().hash_value, initial_root_hash, "Root hash should change after deletion");
 }
 
 fn main() {
-    check_build();
+    test_delete_merkle_tree();
 }

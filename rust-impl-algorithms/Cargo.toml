@@ -8,5 +8,6 @@ edition = "2021"
 [dev-dependencies]
 
 [dependencies]
+merkletree = "0.23.0"
 rayon = "1.10.0"
 serde = "1.0.204"

@@ -18,7 +18,6 @@ mod tests {
 fn test_create_merkle_tree() {
     let data = vec![1, 2, 3, 4];
     let tree = MerkleTree::build(data);
-    let root = tree.root();
     
     fn verify_node_hash(tree: &MerkleTree<i32>, node_index: usize) {
         let node = &tree.nodes[node_index];
@@ -53,18 +52,14 @@ fn test_create_merkle_tree() {
         // Insert a new element
         tree.insert(5);
 
-        // Verify that the size has increased
-        assert_eq!(tree.size, 5, "Tree size should be 5 after insertion");
 
-        // Verify that the root hash has changed
-        assert_ne!(tree.root().hash_value, initial_root_hash, "Root hash should change after insertion");
-
+        
         // Verify the structure of the tree
         fn verify_tree_structure(tree: &MerkleTree<i32>) {
-            for (i, node) in tree.nodes.iter().enumerate() {
-                if let Some(node) = node {
-                    if !node.children.is_empty() {
-                        let children_hash = node.children.iter()
+                for (i, node) in tree.nodes.iter().enumerate() {
+                    if let Some(node) = node {
+                        if !node.children.is_empty() {
+                            let children_hash = node.children.iter()
                             .filter_map(|&child_idx| tree.nodes.get(child_idx).and_then(|n| n.as_ref()).map(|n| n.hash_value.clone()))
                             .reduce(|a, b| a.add(b))
                             .unwrap();
@@ -73,18 +68,32 @@ fn test_create_merkle_tree() {
                 }
             }
         }
-
+    
         verify_tree_structure(&tree);
-
+        
         // Verify that the new element is present
         let leaf_nodes: Vec<_> = tree.nodes.iter()
-            .filter_map(|n| n.as_ref())
-            .filter(|n| n.children.is_empty())
-            .collect();
+        .filter_map(|n| n.as_ref())
+        .filter(|n| n.children.is_empty())
+        .collect();
+        
+        // Verify that the root hash has changed
+        assert_ne!(tree.root().hash_value, initial_root_hash, "Root hash should change after insertion");
         assert_eq!(leaf_nodes.len(), 5, "There should be 5 leaf nodes");
         assert!(leaf_nodes.iter().any(|n| n.value == Some(5)), "The inserted value 5 should be present in the leaf nodes");
     }
 
+    #[test]
+    fn test_delete_merkle_tree() {
+        let mut tree = MerkleTree::build(vec![1, 2, 3, 4]);
+        let initial_root_hash = tree.root().hash_value.clone();
+        tree.delete(&4);
+        assert_eq!(tree.n_leafs, 3, "Tree size should be 3 after deletion {:?}", tree.nodes);
+        assert_ne!(tree.root().hash_value, initial_root_hash, "Root hash should change after deletion");
+    }
+
 }
+
+
 
 

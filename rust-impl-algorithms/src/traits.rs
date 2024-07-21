@@ -7,9 +7,9 @@ pub trait Concat<T> {
     fn concat(self, other: T) -> Self;
 }
 
-pub trait TreeElement: Clone + Hash + Debug + Send + Sync {}
+pub trait TreeElement: Clone + Hash + Debug + Send + Sync + PartialEq{}
 
-impl<T: Clone + Hash + Debug + Send + Sync> TreeElement for T {}
+impl<T: Clone + Hash + Debug + Send + Sync + PartialEq> TreeElement for T {}
 
 #[derive(Debug, Clone, Default, PartialEq, Eq, Copy)]
 pub struct HashValue {
@@ -85,28 +85,6 @@ where
     /// Insert a new element H into the tree
     fn insert(&mut self, element: T) -> bool;
 
-    /// Combine the hashes of multiple elements
-
-    /// Combine n hashes into one
-    fn merge_hash(elms: &Vec<&usize>) -> usize {
-        use rayon::iter::{IntoParallelIterator, ParallelIterator};
-        
-        elms.into_par_iter()
-            .map(|elm| {
-                let mut hasher = DefaultHasher::new();
-                elm.hash(&mut hasher);
-                hasher.finish()
-            })
-            .reduce_with(|a, b| {
-                let mut hasher = DefaultHasher::new();
-                a.hash(&mut hasher);
-                b.hash(&mut hasher);
-                hasher.finish()
-            })
-            .map(|hash| hash as usize)
-            .unwrap_or_else(|| 0)
-    }
-
     /// Get the root hash of the tree
     fn root(&self) -> &TreeNode<T>;
 
@@ -119,7 +97,7 @@ where
     /// Update an existing element in the tree
 
     /// Delete an element from the tree
-    //fn delete(&mut self, element: &T) -> bool;
+    fn delete(&mut self, element: &T) -> bool;
 
     /// Check if the tree is empty
     fn is_empty(&self) -> bool;
