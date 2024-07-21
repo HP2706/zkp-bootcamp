@@ -1,0 +1,12 @@
+workspace = { members = [] }
+
+[package]
+name = "rust-impl-algorithms"
+version = "0.1.0"
+edition = "2021"
+
+[dev-dependencies]
+
+[dependencies]
+rayon = "1.10.0"
+serde = "1.0.204"
