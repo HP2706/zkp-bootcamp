@@ -220,4 +220,44 @@ where
         true
     }
 
+    fn generate_proof(&self, element: &T) -> Option<Vec<HashValue>> {
+        // Find the index of the element
+        let leaf_index = self.find_index(element)?;
+
+        let mut proof = Vec::new();
+        let mut current_index = leaf_index;
+
+        while current_index > 0 {
+            let parent_index = (current_index - 1) / self.branching_factor;
+            let start_sibling = parent_index * self.branching_factor + 1;
+            
+            // Collect sibling hashes
+            for i in start_sibling..start_sibling + self.branching_factor {
+                if i != current_index {
+                    if let Some(Some(node)) = self.nodes.get(i) {
+                        proof.push(node.hash_value.clone());
+                    }
+                }
+            }
+
+            current_index = parent_index;
+        }
+
+        Some(proof)
+    }
+
+    fn verify_proof(&self, element: &T, proof: &Vec<HashValue>) -> bool {
+        // Calculate the hash of the element
+        let mut hasher = DefaultHasher::new();
+        element.hash(&mut hasher);
+        let mut current_hash = HashValue::from(hasher.finish() as usize);
+
+        // Reconstruct the root hash using the proof
+        for sibling_hash in proof {
+            current_hash = current_hash.add(*sibling_hash);
+        }
+
+        // Compare the reconstructed hash with the root hash
+        current_hash == self.root().hash_value
+    }
 }

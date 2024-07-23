@@ -9,5 +9,7 @@ edition = "2021"
 
 [dependencies]
 merkletree = "0.23.0"
+pyo3 = "0.22.2"
+rand = "0.8.5"
 rayon = "1.10.0"
 serde = "1.0.204"

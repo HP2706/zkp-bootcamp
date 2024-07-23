@@ -4,15 +4,19 @@ mod utils;
 use std::sync::Arc;
 use traits::{TreeElement, Tree, TreeNode};
 use algos::merkle_tree::MerkleTree;
-use rayon::iter::IntoParallelRefIterator;
 use std::hash::Hash;
+use rayon::prelude::*;
 
 fn get_bottom_nodes<T: TreeElement>(nodes: Vec<Option<TreeNode<T>>>) -> Vec<TreeNode<T>> {
-    nodes.into_iter()
+    nodes.into_par_iter()
     .filter_map(|n| n)
     .filter(|child| child.children.is_empty())
     .collect()
 }
+
+
+
+
 
 fn test_delete_merkle_tree() {
     let mut tree = MerkleTree::build(vec![1, 2, 3, 4]);

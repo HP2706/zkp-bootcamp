@@ -89,10 +89,10 @@ where
     fn root(&self) -> &TreeNode<T>;
 
     /// Generate a proof for a given element
-    //fn generate_proof(&self, element: &T) -> Option<Self::Proof>;
+    fn generate_proof(&self, element: &T) -> Option<Vec<HashValue>>;
 
     /// Verify a proof for a given element
-    //fn verify_proof(&self, element: &T, proof: &Self::Proof) -> bool;
+    fn verify_proof(&self, element: &T, proof: &Vec<HashValue>) -> bool;
 
     /// Update an existing element in the tree
 
