@@ -1,0 +1,296 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{green!60!black},
+    numbers=left,
+    numberstyle=\tiny,
+    numbersep=5pt,
+    backgroundcolor=\color{gray!10},
+    frame=single,
+    breaklines=true,
+    breakatwhitespace=true,
+    showstringspaces=false,
+}
+\begin{document}
+
+\section*{Homework 1}
+
+For all problems below, assume the finite field is \( p = 71 \).
+
+\textbf{Remember, this is done in a finite field so your answer should only contain numbers [0-70] inclusive. There should be no fractions or negative numbers.}
+
+\subsection*{Problem 1}
+Find the elements in a finite field that are congruent to the following values:
+\begin{itemize}
+    \item -1 
+    \item -4 
+    \item -160
+    \item 500
+\end{itemize}
+
+Solution: 
+
+\begin{itemize}
+    \item $-1 \equiv 70$ as $1 + 70 \mod 71 = 0$
+    \item $-4 \equiv 67$ as $4 + 67 \mod 71 = 0$
+    \item $-160 \equiv 53$ as $160 + 53 \mod 71 = 0$
+    \item $500 \equiv 3$ as $500 \mod 71 = 3$
+\end{itemize}
+
+\subsection*{Problem 2}
+Find the elements that are congruent to \( a = \frac{5}{6}, b = \frac{11}{12}, \) and \( c = \frac{21}{12} \).
+Verify your answer by checking that \( a + b = c \) (in the finite field).
+
+\begin{itemize}
+    \item 1.
+        we factorize and compute 5 * 1/6 seperately:
+        $\frac{1}{6} * 6 = 1$ thus we want to find a number $x$ st
+        $x*6 \equiv 1 \mod 71 \implies$ $x*6 = 72$  
+        $x = 72/6 = 12$
+        
+        thus the answer is: $5 * 12 = 60$
+    \item 2.
+        we factorize and compute 11 * 1/12 seperately:
+        $\frac{1}{12} * 12 = 1$ thus we want to find a number $x$ st
+        $x*12 \equiv 1 \mod 71 \implies$ $x*12 = 72$
+        $x = 72/12 = 6$
+        thus the answer is: $11 * 6 = 66$
+    \item 3.
+        we factorize and compute 21 * 1/12 seperately:
+        $\frac{1}{12} * 12 = 1$ thus we want to find a number $x$ st
+        $x*12 \equiv 1 \mod 71 \implies$ $x*12 = 72$
+        $x = 72/12 = 6$
+        thus the answer is: $(21 * 6) \mod 71 = 126 \mod 71 = 55$
+    \end{itemize}
+
+    we can verify this by checking that $a + b = c$
+    $60 + 66 = 126 \mod 71 = 55$
+
+\subsection*{Problem 3}
+Find the elements that are congruent to \( a = \frac{2}{3}, b = \frac{1}{2}, \) and \( c = \frac{1}{3} \).
+
+\begin{itemize}
+    \item a.
+    we find $\frac{1}{3}$ by solving
+    \[
+        3x = 1 = 72 \mod 71 \implies x = \frac{72}{3} = 24
+    \]
+    thus the answer is $2 * 24 = 48$
+    $\frac{2}{3} \equiv 48$
+
+    \item b.
+    we find $\frac{1}{2}$ by solving
+    \[
+        2x = 1 = 72 \mod 71 \implies x = \frac{72}{2} = 36
+    \]
+    $\frac{1}{2} \equiv 36$
+
+    \item c.
+    we find $\frac{1}{3}$ by solving
+    \[
+        3x = 1 = 72 \mod 71 \implies x = \frac{72}{3} = 24
+    \]
+    
+    $\frac{1}{3} \equiv 24$
+
+\end{itemize}
+
+\[
+(36 \times 48) \mod 71 = 24
+\]
+
+\subsection*{Problem 4}
+What is the modular square root of 12?
+Verify your answer by checking that \( x \cdot x = 12 \ (\text{mod}\ 71) \).
+
+answer: 12
+as
+\[15^2 \mod 71 = 225 \mod 71 = 12\]
+
+\subsection*{Problem 5}
+The inverse of a \( 2 \times 2 \) matrix \( A \) is
+\[
+A^{-1} = \frac{1}{\det} \begin{bmatrix} d & -b \\ -c & a \end{bmatrix}
+\]
+where \( A \) is
+\[
+A = \begin{bmatrix} a & b \\ c & d \end{bmatrix}
+\]
+And the determinant \(\det\) is
+\[
+\det = a \times d - b \times c
+\]
+
+Compute the inverse of the following matrix:
+\[
+\begin{bmatrix} 1 & 1 \\ 1 & 4\end{bmatrix}
+\]
+
+Verify your answer by checking that
+\[
+A A^{-1} = I
+\]
+Where \( I \) is the identity matrix.
+
+
+\[
+det = 1 * 4 - 1 * 1 = 3
+\]
+
+
+\[
+\frac{1}{3} \begin{bmatrix} 4 & -1 \\ -1 & 1 \end{bmatrix}
+\]
+
+we note that $\frac{1}{3} \equiv 24$ and $-1 \equiv 70$
+
+thus we have the matrix 
+
+\[
+A^{-1} = 24 \begin{bmatrix} 4 & 70 \\ 70 & 1 \end{bmatrix} = \begin{bmatrix} 25 & 47 \\ 47 & 24 \end{bmatrix}
+\]
+
+\[
+A A^{-1} = \begin{bmatrix} 1 & 1 \\ 1 & 4 \end{bmatrix} \begin{bmatrix} 25 & 47 \\ 47 & 24 \end{bmatrix} =\\
+\begin{bmatrix}
+(25 + 47) \mod 71  & (47 + 24) \mod 71 \\
+(25 + 188) \mod 71 & (47 + 96) \mod 71     
+\end{bmatrix} = \begin{bmatrix}
+1 & 0 \\
+0 & 1
+\end{bmatrix}
+\] 
+
+\subsection*{Problem 6}
+Suppose we have the following polynomials:
+\[
+p(x) = 52x^2 + 24x + 61
+\]
+\[
+q(x) = 40x^2 + 40x + 58
+\]
+
+What is $p(x) + q(x)$? What is $p(x) \cdot q(x)$?
+
+\[
+p(x)+ q(x) = ((52+40) \mod 71)x^2 + ((24+40) \mod 71)x + ((61+58) \mod 71) = 21x^2 + 64x + 48
+\]
+
+\begin{equation}
+    p(x) \cdot q(x) = (52x^2 + 24x + 61) \cdot (40x^2 + 40x + 58) = \\
+    (52 \cdot 40) \cdot x^4 + (52 \cdot 40 + 24 \cdot 40) \cdot x^3 + 
+    (52 \cdot 58 + 24 \cdot 40 + 61 \cdot 40) \cdot x^2 + (24 \cdot 58 + 61 \cdot 40) \cdot x + 61 \cdot 58 =
+    21 \cdot x^4 + 58 \cdot x^3 + 26 \cdot x^2 + 69 \cdot x + 59
+\end{equation}
+
+Use the \texttt{galois} library in Python to find the roots of $p(x)$ and $q(x)$.
+
+
+\begin{lstlisting}
+    import galois
+    from galois import Poly, GF
+    
+    # Define the finite field
+    Field = GF(71)
+    
+    p_coeffs = Field([52, 24, 61])  # 52x^2 + 24x + 61
+    q_coeffs = Field([40, 40, 58])  # 40x^2 + 40x + 58
+    
+    p = Poly(p_coeffs)
+    q = Poly(q_coeffs)
+    
+    p_roots = p.roots()
+    q_roots = q.roots()
+    
+    print("Roots of p(x):", p_roots)
+    print("Roots of q(x):", q_roots)
+    
+    pq = p * q
+    
+    pq_roots = pq.roots()
+    
+    print("Roots of p(x) * q(x):", pq_roots)
+\end{lstlisting}
+
+The roots of $p(x)$, $q(x)$, and $p(x)q(x)$ are:
+\begin{itemize}
+    \item Roots of $p(x)$: \lstinline{p_roots}
+    \item Roots of $q(x)$: \lstinline{q_roots}
+    \item Roots of $p(x)q(x)$: \lstinline{pq_roots}
+\end{itemize}
+
+What are the roots of $p(x)q(x)$?
+
+\subsection*{Problem 7}
+Find a polynomial $f(x)$ that crosses the points $(10, 15)$, $(23, 29)$
+
+Since these are two points, the polynomial will be of degree 1 and be the equation for a line $(y = ax + b)$.
+
+The solution will be of the form $f(x) = ax + b$
+
+First, let's calculate $a$:
+\[
+a = (29-15) * (23-10)^{-1} \mod 71
+\]
+
+To find $(23-10)^{-1} \mod 71$, we need to find $x$ such that $13x \equiv 1 \mod 71$
+
+We can use the extended Euclidean algorithm to find this inverse:
+
+\begin{align*}
+71 &= 5 \times 13 + 6 \\
+13 &= 2 \times 6 + 1 \\
+6 &= 6 \times 1 + 0
+\end{align*}
+
+Working backwards:
+\begin{align*}
+1 &= 13 - 2 \times 6 \\
+  &= 13 - 2 \times (71 - 5 \times 13) \\
+  &= 11 \times 13 - 2 \times 71
+\end{align*}
+
+\[
+a = 14 * 60 \mod 71 = 840 \mod 71 = 56
+\]
+
+Next, we can find $b$ by substituting $x=10$ and $y=15$ into $y = ax + b$:
+\[
+15 \equiv 56 * 10 + b \mod 71
+15 \equiv 560 + b \mod 71
+15 \equiv 63 + b \mod 71
+b \equiv 15 - 63 \mod 71 \equiv 25 \mod 71
+\]
+
+Therefore, the polynomial is:
+\[
+f(x) = 56x + 25 \mod 71
+\]
+
+Verification:
+\begin{itemize}
+    \item $f(10) = 56 * 10 + 25 \mod 71 = 560 + 25 \mod 71 = 15 \mod 71$
+    \item $f(23) = 56 * 23 + 25 \mod 71 = 1288 + 25 \mod 71 = 29 \mod 71$
+\end{itemize}
+
+This confirms that $f(x) = 56x + 25 \mod 71$ passes through the points $(10, 15)$ and $(23, 29)$ in the finite field with $p=71$.
+
+\subsection*{Problem 8}
+What is Lagrange interpolation and what does it do?
+
+Find a polynomial that crosses through the points $(0, 1)$, $(1, 2)$, $(2, 1)$.
+
+Use this Stack Overflow answer as a starting point: \url{https://stackoverflow.com/a/73434775}
+
+
+
+\end{document}
