@@ -237,52 +237,17 @@ Since these are two points, the polynomial will be of degree 1 and be the equati
 
 The solution will be of the form $f(x) = ax + b$
 
-First, let's calculate $a$:
 \[
-a = (29-15) * (23-10)^{-1} \mod 71
+a = \frac{29-15}{23-10} = \frac{14}{13} = (14 * 11) \mod 71 = 12
 \]
 
-To find $(23-10)^{-1} \mod 71$, we need to find $x$ such that $13x \equiv 1 \mod 71$
+\[b = 15 - 12 * 10 = 15 - 120 = 15 + 22= 37\]
 
-We can use the extended Euclidean algorithm to find this inverse:
-
-\begin{align*}
-71 &= 5 \times 13 + 6 \\
-13 &= 2 \times 6 + 1 \\
-6 &= 6 \times 1 + 0
-\end{align*}
-
-Working backwards:
-\begin{align*}
-1 &= 13 - 2 \times 6 \\
-  &= 13 - 2 \times (71 - 5 \times 13) \\
-  &= 11 \times 13 - 2 \times 71
-\end{align*}
+we can verify this by checking that $f(23) = 29$
 
 \[
-a = 14 * 60 \mod 71 = 840 \mod 71 = 59
+f(23) = 12 * 23 + 37 = 313 \mod 71 = 29
 \]
-
-Next, we can find $b$ by substituting $x=10$ and $y=15$ into $y = ax + b$:
-\[
-15 \equiv 59 * 10 + b \mod 71
-15 \equiv 590 + b \mod 71
-15 \equiv 22 + b \mod 71
-b \equiv 15 - 22 = 15 + 49 = 64 \mod 71
-\]
-
-Therefore, the polynomial is:
-\[
-f(x) = 59x + 64 \mod 71
-\]
-
-we check this is indeed correct
-\begin{itemize}
-    \item $f(10) = 59 * 10 + 64 \mod 71 = 590 + 64 \mod 71 = 15 \mod 71$
-    \item $f(23) = 59 * 23 + 64 \mod 71 = 1 \neq 29 \mod 71$
-\end{itemize}
-
-This confirms that $f(x) = 56x + 25 \mod 71$ passes through the points $(10, 15)$ and $(23, 29)$ in the finite field with $p=71$.
 
 \subsection*{Problem 8}
 What is Lagrange interpolation and what does it do?
