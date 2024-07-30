@@ -1,0 +1,11 @@
+[package]
+name = "rusty_solution"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+discrete-logarithm = "1.0.0"
+num-bigint = "0.4.6"
+num-rational = "0.4.2"
+num-traits = "0.2.19"
+rug = "1.25.0"
