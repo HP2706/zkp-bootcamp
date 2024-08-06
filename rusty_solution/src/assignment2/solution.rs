@@ -105,8 +105,7 @@ fn exercise_5() {
     println!("Decimal approximation: {:.6}", actual_sum.to_f64().unwrap());
 }
 
-
-fn main() {
+pub fn check_exercises() {
     println!("Exercise 1\n");
     exercise_1();
     println!("\nExercise 2\n");
