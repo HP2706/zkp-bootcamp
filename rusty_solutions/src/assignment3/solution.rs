@@ -1,5 +1,5 @@
 //secp256k1
-use generic_ec::{coords::HasAffineXY, curves::Secp256k1, Curve, Point, Scalar, SecretScalar};
+use generic_ec::{coords::HasAffineXY, curves::Secp256k1, Point, Scalar, SecretScalar};
 use rand::thread_rng;
 use tiny_keccak::{Hasher, Keccak};
 
