@@ -76,3 +76,7 @@ def test_solution():
     test_matmul()
     
 test_solution()
+
+a = np.array([i for i in range(1, 10)]).reshape(3, 3)
+b = np.array([1, 2, 3])
+print(a @ b)

@@ -2,23 +2,47 @@
 pragma solidity ^0.8.13;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {Counter} from "../src/Counter.sol";
+import {ECMath, ECPoint} from "../src/Counter.sol";
 
 contract CounterTest is Test {
-    Counter public counter;
+    ECMath public ecMath;
 
     function setUp() public {
-        counter = new Counter();
-        counter.setNumber(0);
+        ecMath = new ECMath();
     }
 
-    function testIncrement() public {
-        counter.increment();
-        assertEq(counter.number(), 1);
+    function testrationalAdd() public {
+        vm.startBroadcast();
+        ECPoint memory A = ecMath.createPoint(1);
+        ECPoint memory B = ecMath.createPoint(2);
+        bool result = ecMath.rationalAdd(A, B, 6, 2);
+        assert(result);
+        vm.stopBroadcast();
     }
 
-    function testSetNumber(uint256 x) public {
-        counter.setNumber(x);
-        assertEq(counter.number(), x);
+    function testmatmul() public {
+        vm.startBroadcast();
+        ECPoint[] memory s = new ECPoint[](3);
+        s[0] = ecMath.createPoint(1);
+        s[1] = ecMath.createPoint(2);
+        s[2] = ecMath.createPoint(3);
+
+        uint256[] memory o = new uint256[](3);
+        o[0] = 14;
+        o[1] = 32;
+        o[2] = 50;
+
+        uint256[] memory matrix = new uint256[](9);
+        for (uint256 i = 0; i < 9; i++) {
+            matrix[i] = i + 1;
+        }
+
+        ecMath.matmul(
+            matrix,
+            3,
+            s,
+            o
+        );
+        vm.stopBroadcast();
     }
 }
