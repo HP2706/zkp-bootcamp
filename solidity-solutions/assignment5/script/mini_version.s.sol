@@ -7,6 +7,8 @@ contract CounterScript is Script {
     function setUp() public {}
 
     function run() public {
-        vm.broadcast();
+        vm.startBroadcast();
+        
+        vm.stopBroadcast();
     }
 }

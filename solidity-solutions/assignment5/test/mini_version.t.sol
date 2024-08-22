@@ -13,6 +13,7 @@ contract PairingsTest is Test {
     }
 
     function testPairings() public view {
+
         uint256 aG1_x = 3010198690406615200373504922352659861758983907867017329644089018310584441462;
         uint256 aG1_y = 17861058253836152797273815394432013122766662423622084931972383889279925210507;
 
@@ -29,7 +30,7 @@ contract PairingsTest is Test {
         uint256 dG2_y1 = 2140229616977736810657479771656733941598412651537078903776637920509952744750;
         uint256 dG2_y2 = 11474861747383700316476719153975578001603231366361248090558603872215261634898;
 
-        uint256[12] memory points = [
+        uint256[18] memory points = [
             aG1_x,
             aG1_y,
             bG2_x2,
@@ -41,10 +42,17 @@ contract PairingsTest is Test {
             dG2_x2,
             dG2_x1,
             dG2_y2,
-            dG2_y1
+            dG2_y1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
         ];
 
         bool x = pairings.run(points);
         console2.log("result:", x);
+        assert(x);
     }
 }
