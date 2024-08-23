@@ -7,10 +7,10 @@ import {Pairing, Verifier} from "../src/solution.sol";
 
 contract VerifierTest is Test {
     Verifier public verifier;
-
     function setUp() public {
         verifier = new Verifier();
     }
+
 
     function testVerifier() public view {
         /// define points
@@ -20,12 +20,11 @@ contract VerifierTest is Test {
 
         uint256 scalar_x1 = 1;
         uint256 scalar_x2 = 1;
-        uint256 scalar_x3 = Pairing.PRIME_Q-3; //use additive inverse of 3
+        uint256 scalar_x3 = Pairing.CurveOrder-3; //use additive inverse of 3
 
         Pairing.G1Point memory A1 = Pairing.create_G1Point(scalar_a1);
-        Pairing.G2Point memory B2 = Pairing.create_G2Point(scalar_b2);
+        Pairing.G2Point memory B2 = Pairing.get_g2_1();// assumes we have scalar_b2 =1
         Pairing.G1Point memory C1 = Pairing.create_G1Point(scalar_c1);
-
 
         bool result = verifier.verify(
             A1,
@@ -38,7 +37,7 @@ contract VerifierTest is Test {
         
         console2.log("result: ", result);
         assert(result);
-
-
     }
+
+
 }
