@@ -1,3 +1,11 @@
 *.gz
 target
 solidity-solutions/assignment4/lib
+.anchor
+.DS_Store
+target
+**/*.rs.bk
+node_modules
+test-ledger
+.yarn
+*/**/.git

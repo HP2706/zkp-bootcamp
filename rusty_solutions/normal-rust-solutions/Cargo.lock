@@ -371,6 +371,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ec2a862134d2a7d32d7983ddcdd1c4923530833c9f2ea1a44fc5fa473989058"
 
 [[package]]
+name = "normal-rust-solutions"
+version = "0.1.0"
+dependencies = [
+ "discrete-logarithm",
+ "generic-ec",
+ "num-bigint",
+ "num-rational",
+ "num-traits",
+ "rand",
+ "rug",
+ "tiny-keccak",
+]
+
+[[package]]
 name = "num-bigint"
 version = "0.4.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -540,20 +554,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bfa0f585226d2e68097d4f95d113b15b83a82e819ab25717ec0590d9584ef366"
 dependencies = [
  "semver",
-]
-
-[[package]]
-name = "rusty_solutions"
-version = "0.1.0"
-dependencies = [
- "discrete-logarithm",
- "generic-ec",
- "num-bigint",
- "num-rational",
- "num-traits",
- "rand",
- "rug",
- "tiny-keccak",
 ]
 
 [[package]]
