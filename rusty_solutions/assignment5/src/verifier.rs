@@ -49,13 +49,14 @@ use ark_ff::{BigInteger, BigInteger256, Field, PrimeField, BigInt, Fp256};
 use ark_bn254::{G1Affine, G2Affine, Bn254, Fr, Fq};
 use ark_bn254::Fq2Config;
 use solana_program::alt_bn128::prelude::{alt_bn128_addition, alt_bn128_multiplication, alt_bn128_pairing};
-use crate::conversion::{bigint_to_bytes, bytes_to_g1, g1_to_bytes, g2_to_bytes, scalar_to_bytes};
+use crate::conversion::{bigint_to_bytes, bytes_to_g1, bytes_to_g2, g1_to_bytes, g2_to_bytes, scalar_to_bytes};
 use anyhow::Result;
 
 use std::ops::Neg;
 use ark_serialize::CanonicalDeserialize;
 use num_bigint::BigUint;
-
+use std::fs::File;
+use std::io::Write;
 
 pub struct VerificationKeys {
     pub alpha_1: BigInt<4>,
@@ -99,44 +100,23 @@ impl Verifier {
         neg_A1 : [u8; 64], 
         B_G2 : [u8; 128], 
         C_G1 : [u8; 64], 
-        x1 : Fq, 
-        x2 : Fq, 
-        x3 : Fq
+        x1 : Fr, 
+        x2 : Fr, 
+        x3 : Fr
     ) -> Result<bool> {
-
-
-        let _X1 = x1 + x2 + x3;
-        let scalar_bytes = bigint_to_bytes(_X1.into_bigint());
-        let point_bytes = g1_to_bytes(&G1Affine::generator());
-        let input: Vec<u8> = point_bytes.iter().chain(scalar_bytes.iter()).cloned().collect();
-        let X1_G1_bytes = alt_bn128_multiplication(&input)?;
-        let X1_G1 = bytes_to_g1(&X1_G1_bytes[..].try_into().unwrap())?;
-
-        /* let pairing_input = [
-            self.proof_a.as_slice(),
-            self.proof_b.as_slice(),
-            self.prepared_public_inputs.as_slice(),
-            self.verifyingkey.vk_gamme_g2.as_slice(),
-            self.proof_c.as_slice(),
-            self.verifyingkey.vk_delta_g2.as_slice(),
-            self.verifyingkey.vk_alpha_g1.as_slice(),
-            self.verifyingkey.vk_beta_g2.as_slice(),
-        ]
-        .concat();
-
-        let pairing_res = alt_bn128_pairing(pairing_input.as_slice())
-            .map_err(|_| Groth16Error::ProofVerificationFailed)?;
-         */
-
+        
+        let X1: Fr = x1 + x2 + x3;
+        let X1_G1 = G1Affine::generator().mul_bigint(X1.into_bigint()).into_affine();
+       
         let pairing_input = [
             neg_A1.as_slice(),
             B_G2.as_slice(),
-            C_G1.as_slice(),
-            g2_to_bytes(&self.gamma_g2).as_slice(),
-            g1_to_bytes(&X1_G1).as_slice(),
-            g2_to_bytes(&self.delta_g2).as_slice(),
             g1_to_bytes(&self.alpha_g1).as_slice(),
             g2_to_bytes(&self.beta_g2).as_slice(),
+            g1_to_bytes(&X1_G1).as_slice(),
+            g2_to_bytes(&self.delta_g2).as_slice(),
+            C_G1.as_slice(),
+            g2_to_bytes(&self.gamma_g2).as_slice(),
         ]
         .concat();
 
@@ -147,8 +127,6 @@ impl Verifier {
             return Err(anyhow::anyhow!("Proof verification failed"));
         }
         Ok(true)
-
-
     }
 }
 

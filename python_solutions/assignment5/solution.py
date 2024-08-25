@@ -12,18 +12,6 @@ from dataclasses import dataclass
 import numpy as np
 
 
-from py_ecc.bn128 import (
-    G1, 
-    G2, 
-    multiply, 
-    add, 
-    pairing, 
-    bn128_curve,
-    eq,
-    neg
-)
-from dataclasses import dataclass
-import numpy as np
 
 
 def verifier(

@@ -53,9 +53,27 @@ pub fn bytes_to_g1(bytes: &[u8; 64]) -> Result<G1Affine> {
     .map_err(|err| anyhow::anyhow!("Failed to deserialize G1 point: {}", err))
 }
 
+pub fn bytes_to_g2(bytes: &[u8; 128]) -> Result<G2Affine> {
+    if bytes.len() != 128 {
+        return Err(anyhow::anyhow!(format!("Invalid byte length for G2 point: expected 128, got {}", bytes.len())));
+    }
 
+    let changed_bytes = change_endianness(bytes);
+    
+    // Print the first few bytes for debugging
+    println!("First 16 bytes of changed G2 input: {:?}", &changed_bytes[..16]);
 
-
+    G2Affine::deserialize_with_mode(
+        &*[&changed_bytes, &[0u8][..]].concat(),
+        Compress::No,
+        Validate::Yes,
+    )
+    .map_err(|err| {
+        println!("Raw G2 input: {:?}", bytes);
+        println!("Changed endianness G2 input: {:?}", changed_bytes);
+        anyhow::anyhow!("Failed to deserialize G2 point: {}. Raw input: {:?}", err, bytes)
+    })
+}
 
 pub fn g2_to_bytes(point: &G2Affine) -> [u8; 128] {
     let mut bytes = [0u8; 128];
