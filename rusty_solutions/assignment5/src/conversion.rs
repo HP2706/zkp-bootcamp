@@ -1,6 +1,4 @@
 use ark_bn254::{G1Affine, G2Affine, Fr, Fq, G1Projective};
-use solana_program::alt_bn128::{self, prelude::*};
-use solana_program::alt_bn128::{PodG1};
 use ark_ec::{AffineRepr, CurveGroup, models::CurveConfig};
 use ark_ff::{BigInteger, BigInteger256, Field, PrimeField, BigInt, Fp256};
 use std::ops::{Mul, Add, Neg};
@@ -9,6 +7,7 @@ use solana_program::alt_bn128::compression::prelude::{convert_endianness, G1, G2
 use solana_program::alt_bn128::prelude::{
     alt_bn128_addition, alt_bn128_multiplication, alt_bn128_pairing,
 };
+use anyhow::Result;
 
 // Helper function to convert G1 point to bytes in the correct format
 pub fn g1_to_bytes(point: &G1Affine) -> [u8; 64] {
@@ -41,6 +40,23 @@ pub fn scalar_to_bytes(scalar: u64) -> [u8; 32] {
     bytes
 }
 
+pub fn bytes_to_g1(bytes: &[u8; 64]) -> Result<G1Affine> {
+    if bytes.len() != 64 {
+        return Err(anyhow::anyhow!(format!("Invalid byte length for scalar got {}", bytes.len())));
+    }
+    
+    G1Affine::deserialize_with_mode(
+        &*[&change_endianness(&bytes[0..64]), &[0u8][..]].concat(),
+        Compress::No,
+        Validate::Yes,
+    )
+    .map_err(|err| anyhow::anyhow!("Failed to deserialize G1 point: {}", err))
+}
+
+
+
+
+
 pub fn g2_to_bytes(point: &G2Affine) -> [u8; 128] {
     let mut bytes = [0u8; 128];
     let (x, y) = point.xy().unwrap();
@@ -53,4 +69,15 @@ pub fn g2_to_bytes(point: &G2Affine) -> [u8; 128] {
     bytes[64..128].reverse();
     
     bytes
+}
+
+
+pub fn change_endianness(bytes: &[u8]) -> Vec<u8> {
+    let mut vec = Vec::new();
+    for b in bytes.chunks(32) {
+        for byte in b.iter().rev() {
+            vec.push(*byte);
+        }
+    }
+    vec
 }

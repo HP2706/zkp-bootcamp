@@ -46,20 +46,22 @@ def verifier(
 */
 use ark_ec::{AffineRepr, CurveGroup, models::CurveConfig};
 use ark_ff::{BigInteger, BigInteger256, Field, PrimeField, BigInt, Fp256};
-use ark_bn254::{G1Affine, G2Affine, Bn254, Fr};
+use ark_bn254::{G1Affine, G2Affine, Bn254, Fr, Fq};
 use ark_bn254::Fq2Config;
 use solana_program::alt_bn128::prelude::{alt_bn128_addition, alt_bn128_multiplication, alt_bn128_pairing};
-use crate::conversion::{g1_to_bytes, scalar_to_bytes, g2_to_bytes, bigint_to_bytes};
+use crate::conversion::{bigint_to_bytes, bytes_to_g1, g1_to_bytes, g2_to_bytes, scalar_to_bytes};
 use anyhow::Result;
+
 use std::ops::Neg;
 use ark_serialize::CanonicalDeserialize;
+use num_bigint::BigUint;
 
 
 pub struct VerificationKeys {
-    pub alpha_1: i64,
-    pub beta_2: i64,
-    pub gamma_2: i64,
-    pub delta_2: i64,
+    pub alpha_1: BigInt<4>,
+    pub beta_2: BigInt<4>,
+    pub gamma_2: BigInt<4>,
+    pub delta_2: BigInt<4>,
 }
 
 pub struct Verifier {
@@ -72,54 +74,43 @@ pub struct Verifier {
 
 impl Verifier {
 
-
-    pub fn create_g1_point(g1_generator : G1Affine, scalar : i64) -> G1Affine {
-        g1_generator.mul_bigint(BigInt::<4>::from(scalar as u64)).into_affine()
-    }
-
-    pub fn create_g2_point(g2_generator : G2Affine, scalar : i64) -> G2Affine {
-        g2_generator.mul_bigint(BigInt::<4>::from(scalar as u64)).into_affine()
-    }
-
     pub fn new(keys : VerificationKeys) -> Self {
         
         let g1_generator = G1Affine::generator();
         let g2_generator = G2Affine::generator();
 
-        let alpha_g1 = Self::create_g1_point(g1_generator, keys.alpha_1);
-        let beta_g2 = Self::create_g2_point(g2_generator, keys.beta_2);
-        let gamma_g2 = Self::create_g2_point(g2_generator, keys.gamma_2);
-        let delta_g2 = Self::create_g2_point(g2_generator, keys.delta_2);
+        let alpha_g1 =g1_generator.mul_bigint(keys.alpha_1);
+        let beta_g2 = g2_generator.mul_bigint(keys.beta_2);
+        let gamma_g2 = g2_generator.mul_bigint(keys.gamma_2);
+        let delta_g2 = g2_generator.mul_bigint(keys.delta_2);
         
         Self {
             scalar_keys : keys,
-            alpha_g1 : alpha_g1,
-            beta_g2 : beta_g2,
-            gamma_g2 : gamma_g2,
-            delta_g2 : delta_g2,
+            alpha_g1 : alpha_g1.into(),
+            beta_g2 : beta_g2.into(),
+            gamma_g2 : gamma_g2.into(),
+            delta_g2 : delta_g2.into(),
         }
     }
 
 
     pub fn verify(
         &self, 
-        A_G1 : G1Affine, 
-        B_G2 : G2Affine, 
-        C_G1 : G1Affine, 
-        x1 : i32, 
-        x2 : i32, 
-        x3 : i32
+        neg_A1 : [u8; 64], 
+        B_G2 : [u8; 128], 
+        C_G1 : [u8; 64], 
+        x1 : Fq, 
+        x2 : Fq, 
+        x3 : Fq
     ) -> Result<bool> {
-        use ark_bn254::Fr;
 
-        let _X1 = Fr::from(x1 as u64) + Fr::from(x2 as u64) + Fr::from(x3 as u64);
 
+        let _X1 = x1 + x2 + x3;
         let scalar_bytes = bigint_to_bytes(_X1.into_bigint());
         let point_bytes = g1_to_bytes(&G1Affine::generator());
         let input: Vec<u8> = point_bytes.iter().chain(scalar_bytes.iter()).cloned().collect();
         let X1_G1_bytes = alt_bn128_multiplication(&input)?;
-
-        let X1_G1 = G1Affine::deserialize_uncompressed(&X1_G1_bytes[..]).map_err(|e| anyhow::anyhow!("Deserialization error: {:?}", e))?;
+        let X1_G1 = bytes_to_g1(&X1_G1_bytes[..].try_into().unwrap())?;
 
         /* let pairing_input = [
             self.proof_a.as_slice(),
@@ -137,12 +128,10 @@ impl Verifier {
             .map_err(|_| Groth16Error::ProofVerificationFailed)?;
          */
 
-        let neg_A1 = A_G1.neg();
-
         let pairing_input = [
-            g1_to_bytes(&neg_A1).as_slice(),
-            g2_to_bytes(&B_G2).as_slice(),
-            g1_to_bytes(&C_G1).as_slice(),
+            neg_A1.as_slice(),
+            B_G2.as_slice(),
+            C_G1.as_slice(),
             g2_to_bytes(&self.gamma_g2).as_slice(),
             g1_to_bytes(&X1_G1).as_slice(),
             g2_to_bytes(&self.delta_g2).as_slice(),
@@ -154,18 +143,15 @@ impl Verifier {
         let pairing_res = alt_bn128_pairing(pairing_input.as_slice())
             .map_err(|_| anyhow::anyhow!("Pairing failed"))?;
         
-
-
-        /* X1 = multiply(G1, _X1)
-        return eq(
-            pairing(B2, A1), 
-            pairing(beta_2, alpha_1) * pairing(gamma_2, X1) * pairing(delta_2, C1)
-        ) */
-
-
+        if pairing_res[31] != 1 {
+            return Err(anyhow::anyhow!("Proof verification failed"));
+        }
         Ok(true)
+
+
     }
 }
+
 
 
 

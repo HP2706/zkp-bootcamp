@@ -158,6 +158,8 @@ dependencies = [
  "ark-ec",
  "ark-ff",
  "ark-serialize",
+ "big-int",
+ "num-bigint",
  "solana-program",
 ]
 
@@ -178,6 +180,26 @@ name = "base64"
 version = "0.22.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
+
+[[package]]
+name = "big-int"
+version = "7.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "31375ce97b1316b3a92644c2cbc93fa9dcfba06e4aec9a440bce23397af82fd6"
+dependencies = [
+ "big-int-proc",
+ "thiserror",
+]
+
+[[package]]
+name = "big-int-proc"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "73cfa06eb56d71f2bb1874b101a50c3ba29fcf3ff7dd8de274e473929459863b"
+dependencies = [
+ "quote",
+ "syn 2.0.76",
+]
 
 [[package]]
 name = "bincode"
