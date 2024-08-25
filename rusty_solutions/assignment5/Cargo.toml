@@ -1,0 +1,12 @@
+[package]
+name = "assignment5"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.86"
+ark-bn254 = "0.4.0"
+ark-ec = "0.4.2"
+ark-ff = "0.4.2"
+ark-serialize = "0.4.2"
+solana-program = "2.0.7"
