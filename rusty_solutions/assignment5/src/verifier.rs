@@ -105,15 +105,18 @@ impl Verifier {
         x3 : Fr
     ) -> Result<bool> {
         
-        let X1: Fr = x1 + x2 + x3;
-        let X1_G1 = G1Affine::generator().mul_bigint(X1.into_bigint()).into_affine();
+        let scalar_bytes = bigint_to_bytes((x1 + x2 + x3).into_bigint());
+        let point_bytes = g1_to_bytes(&G1Affine::generator());
+        let input: Vec<u8> = point_bytes.iter().chain(scalar_bytes.iter()).cloned().collect();
+        let X1_G1_bytes = alt_bn128_multiplication(&input)?;
+
        
         let pairing_input = [
             neg_A1.as_slice(),
             B_G2.as_slice(),
             g1_to_bytes(&self.alpha_g1).as_slice(),
             g2_to_bytes(&self.beta_g2).as_slice(),
-            g1_to_bytes(&X1_G1).as_slice(),
+            X1_G1_bytes.as_slice(),
             g2_to_bytes(&self.delta_g2).as_slice(),
             C_G1.as_slice(),
             g2_to_bytes(&self.gamma_g2).as_slice(),
