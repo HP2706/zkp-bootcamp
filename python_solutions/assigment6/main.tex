@@ -61,21 +61,16 @@ which gives us the following rank 1 constraint system:
 and our other constraint is:
 
 \[
-0 = x^3 y^3 + 11 x^2 y^2 - 36 x y + 36 = b*d + 11d - 36b + 36
+0 == -x^3 y^3 + 11 x^2 y^2 - 36 x y + 36 \\
+0 == -b*d + 11d - 36b + 36 \\
+11d - 36b + 36 = b*d
 \]
-
-which can be rewritten as:
-
-\[
-- 11d + 36b - 36 = b*d 
-\]
-
 
 now our witness vector is:
 
 \[
 W = \begin{bmatrix}
-    x \\ y \\ a \\ b \\ c \\ d \\ e \\ 1
+    1 \\ x \\ y \\ a \\ b \\ c \\ d
 \end{bmatrix}
 \]
 
@@ -91,7 +86,8 @@ where:
 A \odot W = \begin{bmatrix}
     1 & x & y & a & b & c & d\\
     0 & 1 & 0 & 0 & 0 & 0 & 0\\
-    0 & 1 & 1 & 0 & 0 & 0 & 0\\
+    0 & 1 & 0 & 0 & 0 & 0 & 0\\
+    0 & 0 & 1 & 0 & 0 & 0 & 0\\
     0 & 0 & 0 & 1 & 0 & 0 & 0\\
     0 & 0 & 0 & 0 & 1 & 0 & 0\\
 \end{bmatrix} \odot \begin{bmatrix}
@@ -120,7 +116,7 @@ C \odot W = \begin{bmatrix}
     0 & 0 & 0 & 0 & 1 & 0 & 0\\
     0 & 0 & 0 & 0 & 0 & 1 & 0\\
     0 & 0 & 0 & 0 & 0 & 0 & 1\\
-    -36 & 0 & 0 & 0 & 36 & 0 & -11\\
+    36 & 0 & 0 & 0 & -36 & 0 & 11\\
 \end{bmatrix} \odot \begin{bmatrix}
     1 \\ x \\ y \\ a \\ b \\ c \\ d
 \end{bmatrix}
