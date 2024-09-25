@@ -1,0 +1,10 @@
+[package]
+name = "assignment7"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ark-ec = "0.4.2"
+ark-ff = "0.4.2"
+ark-poly = "0.4.2"
+ndarray = "0.16.1"

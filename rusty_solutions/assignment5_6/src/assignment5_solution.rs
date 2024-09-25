@@ -3,12 +3,12 @@ use solana_program::alt_bn128::prelude::{
     alt_bn128_addition, alt_bn128_multiplication, alt_bn128_pairing,
 };
 use ark_bn254::{G1Affine, G2Affine, Fr, Fq, G1Projective};
-use ark_ff::{BigInteger, BigInteger256, Field, PrimeField, BigInt, Fp256};
+use ark_ff::BigInt;
 use ark_ec::{AffineRepr, CurveGroup, models::CurveConfig};
 
-use assignment5::conversion::{g1_to_bytes, scalar_to_bytes, g2_to_bytes, bigint_to_bytes, bytes_to_g1};
-use assignment5::verifier::{Verifier, VerificationKeys};
-use assignment5::ecmath::EcMath;
+use crate::conversion::{g1_to_bytes, scalar_to_bytes, g2_to_bytes, bigint_to_bytes, bytes_to_g1};
+use crate::verifier::{Verifier, VerificationKeys};
+use crate::ecmath::EcMath;
 use std::ops::Sub;
 
 fn main() {
